@@ -1,11 +1,11 @@
-# Koneko Accounting
+# Numerar Contable
 
 Motor contable de **partida doble** para Laravel, diseñado sobre el **Plan Único de Cuentas (PUC) colombiano**. Se instala como paquete Composer en cualquier proyecto Laravel 11 o 12 y expone tanto una interfaz web Blade lista para usar como una API REST JSON completa.
 
 ## Características principales
 
 - **Partida doble estricta** — los comprobantes solo se pueden contabilizar si débitos = créditos.
-- **PUC colombiano precargado** — 9 clases de cuentas (Activo, Pasivo, Patrimonio, Ingresos, Gastos, Costos de Ventas, Costos de Producción, Cuentas de Orden Deudoras y Acreedoras) listas desde el primer `accounting:install`. Opcionalmente carga el catálogo completo de **973 cuentas PUC** con `--with-puc`.
+- **PUC colombiano precargado** — 9 clases de cuentas (Activo, Pasivo, Patrimonio, Ingresos, Gastos, Costos de Ventas, Costos de Producción, Cuentas de Orden Deudoras y Acreedoras) listas desde el primer `contable:install`. Opcionalmente carga el catálogo completo de **973 cuentas PUC** con `--with-puc`.
 - **Catálogo de cuentas jerárquico** — árbol ilimitado de subcuentas auxiliares con naturaleza (débito/crédito) heredada de la clase.
 - **Periodos y ejercicios fiscales** — apertura, cierre y reapertura de periodos; cierre de ejercicio con asiento de resultado automático.
 - **Tipos y numeraciones de comprobante** — CI, CE, CD, CA, CO, NC, CIE con secuencias independientes por tipo.
@@ -28,49 +28,49 @@ Motor contable de **partida doble** para Laravel, diseñado sobre el **Plan Úni
 ## Instalación
 
 ```bash
-composer require koneko/accounting
+composer require numerar/contable
 ```
 
 Ejecuta el comando de instalación:
 
 ```bash
-php artisan accounting:install
+php artisan contable:install
 ```
 
-Esto publica `config/accounting.php`, corre las migraciones y siembra las 9 clases PUC y los tipos de comprobante por defecto.
+Esto publica `config/contable.php`, corre las migraciones y siembra las 9 clases PUC y los tipos de comprobante por defecto.
 
 ### Opciones del instalador
 
 ```bash
 # Cargar el catálogo completo PUC (973 cuentas)
-php artisan accounting:install --with-puc
+php artisan contable:install --with-puc
 
 # Reinstalar desde cero (¡destructivo: elimina las tablas!)
-php artisan accounting:install --fresh
+php artisan contable:install --fresh
 
 # Instalar sin datos iniciales
-php artisan accounting:install --no-seed
+php artisan contable:install --no-seed
 ```
 
 ### Publicar recursos individualmente
 
 ```bash
 # Configuración
-php artisan vendor:publish --tag=accounting-config
+php artisan vendor:publish --tag=contable-config
 
 # Migraciones
-php artisan vendor:publish --tag=accounting-migrations
+php artisan vendor:publish --tag=contable-migrations
 
 # Vistas Blade (para personalizar la UI)
-php artisan vendor:publish --tag=accounting-views
+php artisan vendor:publish --tag=contable-views
 
-# Assets CSS/JS (se copia automáticamente con accounting:install)
-php artisan vendor:publish --tag=accounting-assets --force
+# Assets CSS (se copia automáticamente con contable:install)
+php artisan vendor:publish --tag=contable-assets --force
 ```
 
 ## Configuración rápida
 
-El archivo `config/accounting.php` cubre todas las opciones. Los ajustes más comunes:
+El archivo `config/contable.php` cubre todas las opciones. Los ajustes más comunes:
 
 ### Middleware y prefijos de ruta
 
@@ -92,30 +92,30 @@ El archivo `config/accounting.php` cubre todas las opciones. Los ajustes más co
 
 ## Autorización
 
-El paquete define cuatro gates. Si no los defines tú, **todos pasan** (modo desarrollo). En producción, decláralos en tu `AuthServiceProvider` o `AppServiceProvider`:
+El paquete define cuatro gates. Si no los defines tú, **todos pasan** (modo desarrollo). En producción, decláralos en tu `AppServiceProvider`:
 
 ```php
 use Illuminate\Support\Facades\Gate;
 
-Gate::define('accounting.access',  fn($u) => $u->hasRole(['admin', 'contador']));
-Gate::define('accounting.entries', fn($u) => $u->hasRole(['admin', 'contador']));
-Gate::define('accounting.reports', fn($u) => $u->hasRole(['admin', 'contador', 'auditor']));
-Gate::define('accounting.admin',   fn($u) => $u->hasRole('admin'));
+Gate::define('contable.access',  fn($u) => $u->hasRole(['admin', 'contador']));
+Gate::define('contable.entries', fn($u) => $u->hasRole(['admin', 'contador']));
+Gate::define('contable.reports', fn($u) => $u->hasRole(['admin', 'contador', 'auditor']));
+Gate::define('contable.admin',   fn($u) => $u->hasRole('admin'));
 ```
 
 | Gate | Protege |
 |---|---|
-| `accounting.access` | Acceso general al módulo |
-| `accounting.entries` | Crear, editar y anular comprobantes |
-| `accounting.reports` | Ver reportes contables |
-| `accounting.admin` | Cerrar periodos, configurar ejercicios |
+| `contable.access` | Acceso general al módulo |
+| `contable.entries` | Crear, editar y anular comprobantes |
+| `contable.reports` | Ver reportes contables |
+| `contable.admin` | Cerrar periodos, configurar ejercicios |
 
 ## Multi-tenancy
 
 Desactivado por defecto. Para activarlo:
 
 ```php
-// config/accounting.php
+// config/contable.php
 'tenancy' => [
     'enabled' => true,
     'column'  => 'tenant_id',
@@ -125,9 +125,9 @@ Desactivado por defecto. Para activarlo:
 Registra el resolver en tu `AppServiceProvider::boot()`:
 
 ```php
-use Koneko\Accounting\Facades\Accounting;
+use Numerar\Contable\Facades\Contable;
 
-Accounting::resolveTenantUsing(fn() => auth()->user()?->company_id);
+Contable::resolveTenantUsing(fn() => auth()->user()?->company_id);
 ```
 
 Todas las tablas tienen `tenant_id BIGINT DEFAULT 0`. El valor `0` actúa como centinela para modo single-tenant, evitando problemas con índices únicos en MySQL.
@@ -137,7 +137,7 @@ Todas las tablas tienen `tenant_id BIGINT DEFAULT 0`. El valor `0` actúa como c
 Las líneas de comprobante aceptan cualquier modelo como tercero. Por defecto apunta al modelo `Tercero` del paquete; puedes agregar los tuyos:
 
 ```php
-// config/accounting.php
+// config/contable.php
 'terceros' => [
     [
         'model'             => \App\Models\Proveedor::class,
@@ -162,12 +162,12 @@ Extiende cualquier modelo del paquete y regístralo en la config:
 
 ```php
 // app/Models/MiCuenta.php
-class MiCuenta extends \Koneko\Accounting\Models\Account
+class MiCuenta extends \Numerar\Contable\Models\Account
 {
     // tus personalizaciones
 }
 
-// config/accounting.php
+// config/contable.php
 'models' => [
     'account' => \App\Models\MiCuenta::class,
     // el resto sigue igual...
@@ -176,17 +176,17 @@ class MiCuenta extends \Koneko\Accounting\Models\Account
 
 ## Crear comprobantes por código
 
-Usa la fachada `Accounting` o inyecta `EntryService` directamente. Todas las operaciones corren dentro de una transacción y lanzan excepciones tipadas ante cualquier violación de reglas contables.
+Usa la fachada `Contable` o inyecta `EntryService` directamente. Todas las operaciones corren dentro de una transacción y lanzan excepciones tipadas ante cualquier violación de reglas contables.
 
 ### Requisito previo: periodo abierto
 
 El comprobante se asocia automáticamente al periodo contable cuya fecha de inicio/fin contenga `date`. Si el periodo no existe o está cerrado, se lanza `PeriodClosedException`.
 
 ```php
-use Koneko\Accounting\Facades\Accounting;
+use Numerar\Contable\Facades\Contable;
 
 // Crear el periodo si aún no existe
-Accounting::createPeriod([
+Contable::createPeriod([
     'year'       => 2025,
     'month'      => 1,
     'start_date' => '2025-01-01',
@@ -197,7 +197,7 @@ Accounting::createPeriod([
 ### Registrar un comprobante
 
 ```php
-$entry = Accounting::createEntry([
+$entry = Contable::createEntry([
     'entry_type'  => 'CI',          // código del tipo de comprobante
     'date'        => '2025-01-15',
     'description' => 'Venta de mercancía al contado',
@@ -238,7 +238,7 @@ El servicio valida que `sum(debit) === sum(credit)` antes de confirmar la transa
 ### Editar un comprobante
 
 ```php
-Accounting::updateEntry($entry, [
+Contable::updateEntry($entry, [
     'description' => 'Descripción corregida',
     'lines'       => [...],   // reemplaza todas las líneas
 ]);
@@ -247,9 +247,9 @@ Accounting::updateEntry($entry, [
 ### Anular un comprobante
 
 ```php
-Accounting::voidEntry($entry);
+Contable::voidEntry($entry);
 // o por id:
-Accounting::voidEntry(42);
+Contable::voidEntry(42);
 ```
 
 Los comprobantes anulados quedan con `status = VOIDED` y no pueden editarse. Sus movimientos dejan de aparecer en reportes.
@@ -263,11 +263,11 @@ Los comprobantes anulados quedan con `status = VOIDED` y no pueden editarse. Sus
 | `PeriodClosedException` | El periodo contable está cerrado |
 
 ```php
-use Koneko\Accounting\Exceptions\UnbalancedEntryException;
-use Koneko\Accounting\Exceptions\PeriodClosedException;
+use Numerar\Contable\Exceptions\UnbalancedEntryException;
+use Numerar\Contable\Exceptions\PeriodClosedException;
 
 try {
-    Accounting::createEntry([...]);
+    Contable::createEntry([...]);
 } catch (PeriodClosedException $e) {
     // abrir el periodo primero
 } catch (UnbalancedEntryException $e) {
@@ -287,9 +287,11 @@ try {
 | Estado de Resultados | `/accounting/reports/income-statement` | `GET /api/accounting/reports/income-statement` |
 | Centro de Costo | `/accounting/reports/cost-center` | `GET /api/accounting/reports/cost-center` |
 
+> Las rutas usan el prefijo por defecto `accounting`. Cámbialo en `config/contable.php` → `web_prefix`.
+
 ## API REST
 
-Todos los recursos cuentan con endpoints JSON bajo el prefijo `api/accounting`. Ejemplo de rutas:
+Todos los recursos cuentan con endpoints JSON bajo el prefijo `api/accounting` (configurable). Ejemplo de rutas:
 
 ```
 GET    /api/accounting/accounts
@@ -312,17 +314,17 @@ Las respuestas siguen el formato de Laravel API Resources. Autenticación vía S
 
 ```
 src/
-├── AccountingServiceProvider.php
+├── ContableServiceProvider.php
 ├── Console/Commands/InstallCommand.php
 ├── Database/Seeders/
 │   ├── AccountClassSeeder.php      # 9 clases PUC
 │   └── EntryTypeSeeder.php         # CI, CE, CD, CA, CO, NC, CIE
 ├── Enums/                          # AccountNature, AccountType, EntryStatus...
 ├── Exceptions/                     # UnbalancedEntry, PeriodClosed...
-├── Facades/Accounting.php
+├── Facades/Contable.php
 ├── Http/
-│   ├── Controllers/                # Blade controllers
-│   ├── Controllers/Api/            # JSON controllers
+│   ├── Controllers/                # Controladores Blade
+│   ├── Controllers/Api/            # Controladores JSON
 │   ├── Requests/                   # Form Requests
 │   └── Resources/                  # API Resources
 ├── Models/                         # 10 modelos Eloquent
@@ -330,14 +332,14 @@ src/
 │   ├── AccountingService.php       # Façade principal, tenant resolver
 │   ├── EntryService.php            # Crear, editar, anular comprobantes
 │   ├── FiscalYearService.php       # Cierre de ejercicio y resultado
-│   └── ReportService.php           # 6 reportes contables
+│   └── ReportService.php           # 7 reportes contables
 ├── Traits/
 │   ├── HasTenancy.php
 │   └── HasAuditFields.php
 ├── database/migrations/            # 10 migraciones
-└── helpers.php                     # accounting_model()
+└── helpers.php
 ```
 
 ## Licencia
 
-MIT — [juanriosbertel5](https://github.com/juanriosbertel5)
+MIT — © Alernal · [juan-rios-dev](https://github.com/juan-rios-dev)

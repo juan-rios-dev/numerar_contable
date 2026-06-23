@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Numerar\Contable\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 
