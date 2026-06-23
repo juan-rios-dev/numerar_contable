@@ -1,0 +1,38 @@
+# ── Dependencias ────────────────────────────────────────────────────
+/vendor/
+/node_modules/
+
+# ── Entorno Laravel (app de desarrollo local, no parte del paquete) ─
+/app/
+/artisan
+/bootstrap/
+/database/
+/public/
+/storage/
+.env
+.env.backup
+.env.example
+.env.production
+composer.lock
+composer.package.json
+
+# ── Build temporales ─────────────────────────────────────────────────
+.phpunit.result.cache
+/.phpunit.cache
+
+# ── Editores e IDEs ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+/.fleet
+/.idea
+/.idx
+/.nova
+/.vscode
+/.zed
+.phpactor.json
+/auth.json
+Homestead.json
+Homestead.yaml
+
+# ── Logs ─────────────────────────────────────────────────────────────
+*.log

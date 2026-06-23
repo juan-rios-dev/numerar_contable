@@ -1,0 +1,19 @@
+* text=auto eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+# ── Excluidos del zip que descarga Composer (export-ignore) ──────────
+/.github export-ignore
+/tests export-ignore
+phpunit.xml export-ignore
+CHANGELOG.md export-ignore
+ROADMAP.md export-ignore
+.editorconfig export-ignore
+.styleci.yml export-ignore
+package.json export-ignore
+package-lock.json export-ignore
+vite.config.js export-ignore

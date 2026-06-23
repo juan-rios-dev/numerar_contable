@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, sans-serif;
+
+    /* ── Paleta Koneko Accounting ───────────────────────────── */
+    --color-sage:   #5d8a6e;   /* verde primario, muted */
+    --color-forest: #172b1e;   /* oscuro sidebar        */
+    --color-mint:   #a3c4ae;   /* acento suave          */
+    --color-cream:  #f0f5f2;   /* fondo general         */
+    --color-ink:    #1a1a1a;   /* texto / bordes        */
+}
