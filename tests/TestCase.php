@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Numerar\Contable\Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 

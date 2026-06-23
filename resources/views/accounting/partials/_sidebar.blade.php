@@ -22,7 +22,7 @@ $item = function(string $route, string $pattern) use ($is): string {
         </div>
         <div>
             <p class="text-white font-extrabold text-sm tracking-widest uppercase leading-none">Numerar</p>
-            <p class="text-mint text-[10px] tracking-[0.2em] uppercase mt-0.5">Accounting</p>
+            <p class="text-mint text-[10px] tracking-[0.2em] uppercase mt-0.5">Contable</p>
         </div>
     </div>
 </div>
@@ -196,6 +196,6 @@ $item = function(string $route, string $pattern) use ($is): string {
 {{-- ── Pie ─────────────────────────────────────────────────────── --}}
 <div class="px-4 py-3 border-t border-ink shrink-0 bg-ink/20">
     <p class="text-[9px] font-mono text-mint/30 uppercase tracking-widest">
-        Numerar Contable · v1.0
+        Derechos Reservados © Alernal · v1.0
     </p>
 </div>

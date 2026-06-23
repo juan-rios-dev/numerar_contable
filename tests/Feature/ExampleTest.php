@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Feature;
+namespace Numerar\Contable\Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Numerar\Contable\Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
